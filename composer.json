@@ -1,0 +1,10 @@
+{
+    "name": "yireo/shopware6-store-api-client",
+    "description": "PHP client for Shopware 6 Store API",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Yireo\\StoreApiClient\\": "src/"
+        }
+    }
+}
