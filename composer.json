@@ -6,5 +6,8 @@
         "psr-4": {
             "Yireo\\StoreApiClient\\": "src/"
         }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.0"
     }
 }
