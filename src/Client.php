@@ -10,6 +10,8 @@ use GuzzleHttp\Client as HttpClient;
  */
 class Client
 {
+    const VERSION = 4;
+
     /** @var string */
     private $baseUri = '';
 
@@ -52,7 +54,7 @@ class Client
      */
     public function getContext(): array
     {
-        $data = $this->request('get', 'v1/context');
+        $data = $this->get('context');
         if (isset($data['token'])) {
             $this->token = $data['token'];
         }
@@ -66,7 +68,7 @@ class Client
     public function getToken(): string
     {
         $options = ['json' => ['includes' => ['sales_channel_context' => ['token']]]];
-        $data = $this->get('v1/context', $options);
+        $data = $this->get('context', $options);
         if (isset($data['token'])) {
             $this->token = $data['token'];
             return $data['token'];
@@ -75,13 +77,32 @@ class Client
         return '';
     }
 
+
+    /**
+     * @return array
+     */
+    public function getProducts(): array
+    {
+        return $this->get('product');
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories(): array
+    {
+        return $this->get('category');
+    }
+
+
     /**
      * @param string $path
      * @param array $options
      * @return array
      */
-    private function get(string $path, array $options = []): array
+    public function get(string $path, array $options = []): array
     {
+        $path = 'v' . self::VERSION . '/' . $path;
         return $this->request('get', $path, $options);
     }
 
@@ -91,7 +112,7 @@ class Client
      * @param array $options
      * @return array
      */
-    private function post(string $path, array $postData, array $options = []): array
+    public function post(string $path, array $postData, array $options = []): array
     {
         $options['json'] = $postData;
         return $this->request('post', $path, $options);
@@ -110,6 +131,7 @@ class Client
         }
 
         $response = $this->getHttpClient()->request($method, 'store-api/' . $path, $options);
+        //$response = $this->getHttpClient()->request($method, 'sales-channel-api/' . $path, $options);
         $json = (string)$response->getBody();
         return json_decode($json, true);
     }
@@ -133,7 +155,9 @@ class Client
     private function getHeaders(): array
     {
         $headers = [
-            'sw-access-key' => $this->accessKey
+            //'SW-Access-Key' => $this->accessKey,
+            'sw-access-key' => $this->accessKey,
+            'Content-Type' => 'application/json'
         ];
 
         if (!empty($this->token)) {
